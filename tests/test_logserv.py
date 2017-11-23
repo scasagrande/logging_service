@@ -2,7 +2,10 @@
 
 import os
 import tempfile
+import json
 import pytest
+from hypothesis import given
+import hypothesis.strategies as st
 
 from logserv import logserv
 
@@ -26,4 +29,20 @@ def client(request):
 def test_empty_db(client):
     """Start with a blank database."""
     rv = client.get('/messages')
-    assert b'hello world' in rv.data
+    assert b'[]' in rv.data
+
+
+@given(st.text(min_size=1))
+def test_store_retrieve(client, msg):
+    rv = client.post('/messages', data=dict({
+        'clientid': 100,
+        'loglevel': 0,
+        'message': msg
+    }))
+
+    assert b'{"success": true}' in rv.data
+
+    rv = client.get('/messages')
+    expected = json.dumps({"clientid": 100, "loglevel": 0, "message": msg}).encode()
+
+    assert expected in rv.data
