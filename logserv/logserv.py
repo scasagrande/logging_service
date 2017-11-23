@@ -76,4 +76,9 @@ def messages():
         return json.dumps(entries)
     elif request.method == 'POST':
         # handle adding new data to the database
-        pass
+        db.execute(
+            'insert into messages (clientid, loglevel, message) values (:clientid, :loglevel, :message)',
+            (request.form['clientid'], request.form['loglevel'], request.form['message'])
+        )
+        db.commit()
+        return json.dumps({'success': True}), 200
