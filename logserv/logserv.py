@@ -67,6 +67,15 @@ def messages():
     if request.method == 'GET':
         # handle getting and filtering the data
         min_level = request.args.get('min_level', 0) # Default to showing all log messages
+
+        try:
+            int(min_level)
+        except ValueError:
+            min_level = min_level.lower()
+            min_level = _convert_log_name_to_id(min_level)
+            if min_level is None:
+                return json.dumps({'success': False, 'error': 'Bad log level'}), 400
+
         cur = db.execute(
             'select msgs.clientid, l.name, msgs.message from messages msgs '
             'inner join loglevels l on msgs.loglevel = l.id '
@@ -80,14 +89,9 @@ def messages():
     elif request.method == 'POST':
         # handle adding new data to the database
         name = request.form['loglevel'].lower()
-        cur = db.execute(
-            'select id from loglevels where name = :name;',
-            (name,)
-        )
-        entries = cur.fetchall()
-        if len(entries) == 0:
+        loglevel = _convert_log_name_to_id(name)
+        if loglevel is None:
             return json.dumps({'success': False, 'error': 'Bad log level'}), 400
-        loglevel = entries[0][0]
 
         db.execute(
             'insert into messages (clientid, loglevel, message) values (:clientid, :loglevel, :message);',
@@ -101,3 +105,13 @@ def messages():
 def messages_delete_all():
     init_db()
     return json.dumps({'success': True}), 200
+
+
+def _convert_log_name_to_id(name):
+    db = get_db()
+    cur = db.execute(
+        'select id from loglevels where name = :name;',
+        (name,)
+    )
+    entries = cur.fetchall()
+    return None if len(entries) == 0 else entries[0][0]
