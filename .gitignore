@@ -63,3 +63,6 @@ nosetests.xml
 
 # pyenv files
 .python-version
+
+# pytest files
+.cache/
