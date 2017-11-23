@@ -14,7 +14,7 @@ values  (0, 'info'),
 create table messages (
   id integer primary key autoincrement,
   clientid integer not null,
-  loglevel text not null,
+  loglevel integer not null,
   message text not null,
   FOREIGN KEY(loglevel) REFERENCES loglevels(id)
 );

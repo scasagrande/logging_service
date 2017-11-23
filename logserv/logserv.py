@@ -8,6 +8,8 @@ https://github.com/pallets/flask/tree/0.12-maintenance/examples/flaskr
 """
 
 import os
+import json
+
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, g, request
 
@@ -61,9 +63,17 @@ def close_db(error):
 
 @app.route('/messages', methods=['GET', 'POST'])
 def messages():
+    db = get_db()
     if request.method == 'GET':
         # handle getting and filtering the data
-        return 'hello world'
+        min_level = request.args.get('min_level', 0) # Default to showing all log messages
+        cur = db.execute(
+            'select clientid, loglevel, message from messages where loglevel >= :min_level;',
+            (min_level,)
+        )
+        entries = cur.fetchall()
+        entries = [{'clientid': entry[0], 'loglevel': entry[1], 'message': entry[2]} for entry in entries]
+        return json.dumps(entries)
     elif request.method == 'POST':
         # handle adding new data to the database
         pass
