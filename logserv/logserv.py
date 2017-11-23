@@ -95,3 +95,9 @@ def messages():
         )
         db.commit()
         return json.dumps({'success': True}), 200
+
+
+@app.route('/messages', methods=['DELETE'])
+def messages_delete_all():
+    init_db()
+    return json.dumps({'success': True}), 200
