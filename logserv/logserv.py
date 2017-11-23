@@ -68,17 +68,30 @@ def messages():
         # handle getting and filtering the data
         min_level = request.args.get('min_level', 0) # Default to showing all log messages
         cur = db.execute(
-            'select clientid, loglevel, message from messages where loglevel >= :min_level;',
+            'select msgs.clientid, l.name, msgs.message from messages msgs '
+            'inner join loglevels l on msgs.loglevel = l.id '
+            'where loglevel >= :min_level;',
             (min_level,)
         )
         entries = cur.fetchall()
         entries = [{'clientid': entry[0], 'loglevel': entry[1], 'message': entry[2]} for entry in entries]
         return json.dumps(entries)
+
     elif request.method == 'POST':
         # handle adding new data to the database
+        name = request.form['loglevel'].lower()
+        cur = db.execute(
+            'select id from loglevels where name = :name;',
+            (name,)
+        )
+        entries = cur.fetchall()
+        if len(entries) == 0:
+            return json.dumps({'success': False, 'error': 'Bad log level'}), 400
+        loglevel = entries[0][0]
+
         db.execute(
-            'insert into messages (clientid, loglevel, message) values (:clientid, :loglevel, :message)',
-            (request.form['clientid'], request.form['loglevel'], request.form['message'])
+            'insert into messages (clientid, loglevel, message) values (:clientid, :loglevel, :message);',
+            (request.form['clientid'], loglevel, request.form['message'])
         )
         db.commit()
         return json.dumps({'success': True}), 200

@@ -36,13 +36,13 @@ def test_empty_db(client):
 def test_store_retrieve(client, msg):
     rv = client.post('/messages', data=dict({
         'clientid': 100,
-        'loglevel': 0,
+        'loglevel': 'info',
         'message': msg
     }))
 
     assert b'{"success": true}' in rv.data
 
     rv = client.get('/messages')
-    expected = json.dumps({"clientid": 100, "loglevel": 0, "message": msg}).encode()
+    expected = json.dumps({"clientid": 100, "loglevel": 'info', "message": msg}).encode()
 
     assert expected in rv.data
