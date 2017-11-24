@@ -54,7 +54,7 @@ This returns, as JSON, a list of objects of the following form:
 ```json
 {
   "clientid": 100,
-  "loglevel": "info"
+  "loglevel": "info",
   "message": "hello world"
 }
 ```

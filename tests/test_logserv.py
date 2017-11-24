@@ -27,7 +27,10 @@ def client(request):
 
 
 def test_empty_db(client):
-    """Start with a blank database."""
+    """
+    Starting with a new server, the messages GET route should return an empty
+    list
+    """
     rv = client.get('/messages')
     assert b'[]' in rv.data
     assert rv.status_code == 200
@@ -35,6 +38,13 @@ def test_empty_db(client):
 
 @given(st.text(min_size=1))
 def test_store_retrieve(client, msg):
+    """
+    A log message stored via the POST route should be retrievable via the GET
+    route.
+
+    A wide variety of log messages are tested via Hypothesis to cover all
+    common string cases
+    """
     rv = client.post('/messages', data=dict({
         'clientid': 100,
         'loglevel': 'info',
@@ -53,6 +63,74 @@ def test_store_retrieve(client, msg):
 
     assert expected in rv.data
     assert rv.status_code == 200
+
+
+def test_store_delete_retrieve(client):
+    """
+    After storing a message in the log, the DELETE route is called,
+    and then the GET route should return an empty list
+    """
+    rv = client.post('/messages', data=dict({
+        'clientid': 100,
+        'loglevel': 'info',
+        'message': 'foobar'
+    }))
+
+    assert b'{"success": true}' in rv.data
+    assert rv.status_code == 200
+
+    rv = client.delete('/messages')
+
+    assert b'{"success": true}' in rv.data
+    assert rv.status_code == 200
+
+    rv = client.get('/messages')
+    assert b'[]' in rv.data
+    assert rv.status_code == 200
+
+
+def test_retrieve_min_level(client):
+    messages = [
+        {
+            "clientid": 100,
+            "loglevel": "info",
+            "message": "business as usual"
+        },
+        {
+            "clientid": 101,
+            "loglevel": "warning",
+            "message": "take a look when you have time"
+        },
+        {
+            "clientid": 102,
+            "loglevel": "error",
+            "message": "danger danger!!"
+        }
+    ]
+
+    for msg in messages:
+        _ = client.post('/messages', data=msg)
+
+    rv = client.get('/messages')
+    for msg in messages:
+        assert json.dumps(msg).encode() in rv.data
+
+    for idx, level in enumerate(('info', 'warning', 'error')):
+        # Check that filtering by both the log level name, or the associated
+        # log level ID works
+        rv_name = client.get('/messages?min_level={}'.format(level))
+        rv_num = client.get('/messages?min_level={}'.format(level))
+        if idx == 0:
+            for msg in messages:
+                assert json.dumps(msg).encode() in rv_name.data
+                assert json.dumps(msg).encode() in rv_num.data
+            continue
+        for msg in messages[:idx-1]:
+            assert json.dumps(msg).encode() not in rv_name.data
+            assert json.dumps(msg).encode() not in rv_num.data
+        for msg in messages[idx:]:
+            assert json.dumps(msg).encode() in rv_name.data
+            assert json.dumps(msg).encode() in rv_num.data
 
 
 def test_bad_loglevel_post(client):
