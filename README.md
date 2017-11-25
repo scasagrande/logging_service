@@ -126,7 +126,7 @@ Since the server is just a basic CRUD webserver, anything that can make HTTP web
 
 ### Provided Python client
 
-TODO
+Please see readme file located in the client directory `client/README.md`
 
 ### Curl
 
