@@ -66,3 +66,6 @@ nosetests.xml
 
 # pytest files
 .cache/
+
+# Project specific files
+logs.db

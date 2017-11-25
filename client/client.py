@@ -16,10 +16,10 @@ class LogClient():
             'loglevel': loglevel,
             'message': msg
         }
-        r.post('{}:{}/messages'.format(self.hostname, self.port), data=data)
+        return r.post('{}:{}/messages'.format(self.hostname, self.port), data=data).json()
 
     def delete(self):
-        r.delete('{}:{}/messages'.format(self.hostname, self.port))
+        return r.delete('{}:{}/messages'.format(self.hostname, self.port)).json()
 
     def get(self, min_level=None):
         route = '{}:{}/messages'.format(self.hostname, self.port)
