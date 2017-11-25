@@ -9,6 +9,7 @@ https://github.com/pallets/flask/tree/0.12-maintenance/examples/flaskr
 
 import os
 import json
+import datetime
 
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, g, request
@@ -77,25 +78,29 @@ def messages():
                 return json.dumps({'success': False, 'error': 'Bad log level'}), 400
 
         cur = db.execute(
-            'select msgs.clientid, l.name, msgs.message from messages msgs '
+            'select msgs.clientid, l.name, msgs.message, msgs.creation_datetime from messages msgs '
             'inner join loglevels l on msgs.loglevel = l.id '
             'where loglevel >= :min_level;',
             (min_level,)
         )
         entries = cur.fetchall()
-        entries = [{'clientid': entry[0], 'loglevel': entry[1], 'message': entry[2]} for entry in entries]
+        entries = [
+            {'clientid': entry[0], 'loglevel': entry[1], 'message': entry[2], 'creation_datetime': entry[3]}
+            for entry in entries
+        ]
         return json.dumps(entries)
 
     elif request.method == 'POST':
         # handle adding new data to the database
+        now = str(datetime.datetime.now().utcnow())
         name = request.form['loglevel'].lower()
         loglevel = _convert_log_name_to_id(name)
         if loglevel is None:
             return json.dumps({'success': False, 'error': 'Bad log level'}), 400
 
         db.execute(
-            'insert into messages (clientid, loglevel, message) values (:clientid, :loglevel, :message);',
-            (request.form['clientid'], loglevel, request.form['message'])
+            'insert into messages (clientid, loglevel, message, creation_datetime) values (:clientid, :loglevel, :message, :now);',
+            (request.form['clientid'], loglevel, request.form['message'], now)
         )
         db.commit()
         return json.dumps({'success': True}), 200

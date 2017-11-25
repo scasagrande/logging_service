@@ -55,9 +55,12 @@ This returns, as JSON, a list of objects of the following form:
 {
   "clientid": 100,
   "loglevel": "info",
-  "message": "hello world"
+  "message": "hello world",
+  "creation_datetime": '2017-11-25 03:54:13.054366'
 }
 ```
+
+Where `creation_datetime` is of UTC timezone.
 
 Optional filters for log level
 

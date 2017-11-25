@@ -16,5 +16,6 @@ create table messages (
   clientid integer not null,
   loglevel integer not null,
   message text not null,
+  creation_datetime text not null,
   FOREIGN KEY(loglevel) REFERENCES loglevels(id)
 );
