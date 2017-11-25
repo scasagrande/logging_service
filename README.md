@@ -156,3 +156,4 @@ Alternate approaches could be taken if there was a specific client requirement. 
 - Authentication is an obvious one. Basic auth is actually really easy to strap onto Flask apps so this would be relatively easy to add, although would require some work to make sure everything is actually secure.
 - Super duper vulnerable to SQL injection.
 - Each request is a blocking action, and thus concurrent requests are blocked and processed serially. Since each request here is pretty light weight, I decided that this was acceptable for now. If there was additional processing logic that took a non-trivial amount of time, I would want to see this addressed. One way to handle this would be to use Django Channels with a few worker processes behind `gunicorn` to handle the requests.
+- Additional filtering on log retrieval could be easily added with how the server has been setup

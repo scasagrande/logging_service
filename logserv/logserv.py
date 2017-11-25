@@ -9,7 +9,7 @@ https://github.com/pallets/flask/tree/0.12-maintenance/examples/flaskr
 
 import os
 import json
-import datetime
+from datetime import datetime
 
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, g, request
@@ -92,7 +92,7 @@ def messages():
 
     elif request.method == 'POST':
         # handle adding new data to the database
-        now = str(datetime.datetime.now().utcnow())
+        now = str(datetime.now().utcnow())
         name = request.form['loglevel'].lower()
         loglevel = _convert_log_name_to_id(name)
         if loglevel is None:

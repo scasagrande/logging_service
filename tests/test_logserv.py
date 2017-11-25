@@ -6,6 +6,7 @@ import json
 import pytest
 from hypothesis import given
 import hypothesis.strategies as st
+from datetime import datetime
 
 from logserv import logserv
 
@@ -37,7 +38,7 @@ def test_empty_db(client):
 
 
 @given(st.text(min_size=1))
-def test_store_retrieve(client, msg):
+def test_store_retrieve(mocker, client, msg):
     """
     A log message stored via the POST route should be retrievable via the GET
     route.
@@ -45,6 +46,9 @@ def test_store_retrieve(client, msg):
     A wide variety of log messages are tested via Hypothesis to cover all
     common string cases
     """
+    mocker.patch.object(logserv, 'datetime')
+    logserv.datetime.now.return_value.utcnow.return_value = datetime(2017, 11, 25, 1, 2, 3)
+
     rv = client.post('/messages', data=dict({
         'clientid': 100,
         'loglevel': 'info',
@@ -58,7 +62,8 @@ def test_store_retrieve(client, msg):
     expected = json.dumps({
         "clientid": 100,
         "loglevel": 'info',
-        "message": msg
+        "message": msg,
+        'creation_datetime': '2017-11-25 01:02:03'
     }).encode()
 
     assert expected in rv.data
@@ -89,7 +94,13 @@ def test_store_delete_retrieve(client):
     assert rv.status_code == 200
 
 
-def test_retrieve_min_level(client):
+def test_retrieve_min_level(mocker, client):
+
+    # Mock datetime object
+    mocker.patch.object(logserv, 'datetime')
+    logserv.datetime.now.return_value.utcnow.return_value = datetime( 2017, 11, 25, 1, 2, 3)
+
+    # Create test data
     messages = [
         {
             "clientid": 100,
@@ -108,9 +119,15 @@ def test_retrieve_min_level(client):
         }
     ]
 
+    # Post the messages to the server
     for msg in messages:
         _ = client.post('/messages', data=msg)
 
+    # Modify our local data to include the mocked datetime creation
+    for msg in messages:
+        msg['creation_datetime'] = str(datetime(2017, 11, 25, 1, 2, 3))
+
+    # Get the log messages back from the server
     rv = client.get('/messages')
     for msg in messages:
         assert json.dumps(msg).encode() in rv.data
