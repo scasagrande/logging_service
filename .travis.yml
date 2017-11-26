@@ -7,6 +7,7 @@ python:
 install:
   - "pip install -r requirements.txt"
   - "pip install -r dev-requirements.txt"
+  - "pip install -r client/requirements.txt"
   - "pip install ."
 before_script:
   # We use before_script to report version and path information in a way
