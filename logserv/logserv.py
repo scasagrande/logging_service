@@ -120,3 +120,7 @@ def _convert_log_name_to_id(name):
     )
     entries = cur.fetchall()
     return None if len(entries) == 0 else entries[0][0]
+
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0')

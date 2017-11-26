@@ -38,6 +38,21 @@ $ flask run
 
 Server is now running on `localhost:5000` by default.
 
+How to run with Docker
+----------------------
+
+A `Dockerfile` is included if you prefer to use that. To run with docker, first ensure that the Docker daemon is up and running on your system, and that your user account has the correct permissions.
+
+```bash
+$ docker build -t logserv .
+$ docker run --rm -it -p 5000:5000 logserv
+```
+
+This will build the `logserv` docker image, and then run it with port forwarding on localhost 5000. You can access this server in the same way as running the server without docker.
+
+To terminate the server process, simply press `CTRL+c` in the terminal window you started it from.
+
+
 How to use
 ----------
 
@@ -164,8 +179,8 @@ Alternate approaches could be taken if there was a specific client requirement. 
 `logserv` has several shortcomings which I would want to see addressed before being used in production, but are beyond the scope of this challenge.
 
 - Database migrations need to be a thing. You should be able to update this software, and thus the schema, without having to do manual migrations and/or wiping the DB. I know that Django supports this by default, and I'm sure there is a Flask plugin to do this.
-- Config file support so that the database could be managed by something more powerful than `sqlite3`.
+- Config file support. This would allow the database to be managed by something more powerful than `sqlite3`, as well as not running the server always in debug mode.
 - Authentication is an obvious one. Basic auth is actually really easy to strap onto Flask apps so this would be relatively easy to add, although would require some work to make sure everything is actually secure.
-- Super duper vulnerable to SQL injection.
+- Super duper vulnerable to SQL injection. Inputs should be sanitized.
 - Each request is a blocking action, and thus concurrent requests are blocked and processed serially. Since each request here is pretty light weight, I decided that this was acceptable for now. If there was additional processing logic that took a non-trivial amount of time, I would want to see this addressed. One way to handle this would be to use Django Channels with a few worker processes behind `gunicorn` to handle the requests.
-- Additional filtering on log retrieval could be easily added with how the server has been setup
+- Additional filtering on log retrieval could be easily added with how the server has been setup.
