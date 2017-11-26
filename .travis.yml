@@ -1,0 +1,20 @@
+sudo: false
+language: python
+python:
+  - "3.4"
+  - "3.5"
+  - "3.6"
+install:
+  - "pip install -r requirements.txt"
+  - "pip install -r dev-requirements.txt"
+before_script:
+  # We use before_script to report version and path information in a way
+  # that can be easily hidden by Travis' log folding. Moreover, a nonzero
+  # exit code from this block kills the entire job, meaning that if we can't
+  # even sensibly get version information, we correctly abort.
+  - which python
+  - python --version
+  - which pytest
+  - pytest --version
+script:
+  - pytest tests/
