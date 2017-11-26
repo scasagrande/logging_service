@@ -56,7 +56,7 @@ This returns, as JSON, a list of objects of the following form:
   "clientid": 100,
   "loglevel": "info",
   "message": "hello world",
-  "creation_datetime": '2017-11-25 03:54:13.054366'
+  "creation_datetime": "2017-11-25 03:54:13.054366"
 }
 ```
 
@@ -110,6 +110,18 @@ $ pip install -r dev-requirements.txt
 ```
 
 Then with your current working director at the project root, execute `pytest`:
+
+```bash
+$ pytest tests/test_logserv.py
+```
+
+If you would like to run all the tests (ie, include the client tests) you need to install the dependencies for the client
+
+```bash
+$ pip install -r client/requirements.txt
+```
+
+Then you can run them all
 
 ```bash
 $ pytest tests/
