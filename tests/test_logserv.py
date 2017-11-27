@@ -61,9 +61,9 @@ def test_store_retrieve(mocker, client, msg):
     rv = client.get('/messages')
     expected = json.dumps({
         "clientid": 100,
+        "creation_datetime": "2017-11-25 01:02:03",
         "loglevel": 'info',
         "message": msg,
-        'creation_datetime': '2017-11-25 01:02:03'
     }).encode()
 
     assert expected in rv.data
@@ -130,7 +130,7 @@ def test_retrieve_min_level(mocker, client):
     # Get the log messages back from the server
     rv = client.get('/messages')
     for msg in messages:
-        assert json.dumps(msg).encode() in rv.data
+        assert json.dumps(msg, sort_keys=True).encode() in rv.data
 
     for idx, level in enumerate(('info', 'warning', 'error')):
         # Check that filtering by both the log level name, or the associated
@@ -139,15 +139,15 @@ def test_retrieve_min_level(mocker, client):
         rv_num = client.get('/messages?min_level={}'.format(level))
         if idx == 0:
             for msg in messages:
-                assert json.dumps(msg).encode() in rv_name.data
-                assert json.dumps(msg).encode() in rv_num.data
+                assert json.dumps(msg, sort_keys=True).encode() in rv_name.data
+                assert json.dumps(msg, sort_keys=True).encode() in rv_num.data
             continue
         for msg in messages[:idx-1]:
-            assert json.dumps(msg).encode() not in rv_name.data
-            assert json.dumps(msg).encode() not in rv_num.data
+            assert json.dumps(msg, sort_keys=True).encode() not in rv_name.data
+            assert json.dumps(msg, sort_keys=True).encode() not in rv_num.data
         for msg in messages[idx:]:
-            assert json.dumps(msg).encode() in rv_name.data
-            assert json.dumps(msg).encode() in rv_num.data
+            assert json.dumps(msg, sort_keys=True).encode() in rv_name.data
+            assert json.dumps(msg, sort_keys=True).encode() in rv_num.data
 
 
 def test_bad_loglevel_post(client):
@@ -157,12 +157,12 @@ def test_bad_loglevel_post(client):
         'message': 'foobar'
     }))
 
-    assert b'{"success": false, "error": "Bad log level"}' in rv.data
+    assert b'{"error": "Bad log level", "success": false}' in rv.data
     assert rv.status_code == 400
 
 
 def test_bad_loglevel_get(client):
     rv = client.get('/messages?min_level=foobar')
 
-    assert b'{"success": false, "error": "Bad log level"}' in rv.data
+    assert b'{"error": "Bad log level", "success": false}' in rv.data
     assert rv.status_code == 400

@@ -75,7 +75,7 @@ def messages():
             min_level = min_level.lower()
             min_level = _convert_log_name_to_id(min_level)
             if min_level is None:
-                return json.dumps({'success': False, 'error': 'Bad log level'}), 400
+                return json.dumps({'success': False, 'error': 'Bad log level'}, sort_keys=True), 400
 
         cur = db.execute(
             'select msgs.clientid, l.name, msgs.message, msgs.creation_datetime from messages msgs '
@@ -88,7 +88,7 @@ def messages():
             {'clientid': entry[0], 'loglevel': entry[1], 'message': entry[2], 'creation_datetime': entry[3]}
             for entry in entries
         ]
-        return json.dumps(entries)
+        return json.dumps(entries, sort_keys=True)
 
     elif request.method == 'POST':
         # handle adding new data to the database
@@ -96,7 +96,7 @@ def messages():
         name = request.form['loglevel'].lower()
         loglevel = _convert_log_name_to_id(name)
         if loglevel is None:
-            return json.dumps({'success': False, 'error': 'Bad log level'}), 400
+            return json.dumps({'success': False, 'error': 'Bad log level'}, sort_keys=True), 400
 
         db.execute(
             'insert into messages (clientid, loglevel, message, creation_datetime) values (:clientid, :loglevel, :message, :now);',
