@@ -59,14 +59,14 @@ def test_store_retrieve(mocker, client, msg):
     assert rv.status_code == 200
 
     rv = client.get('/messages')
-    expected = json.dumps({
+    expected = {
         "clientid": 100,
         "creation_datetime": "2017-11-25 01:02:03",
         "loglevel": 'info',
         "message": msg,
-    }).encode()
+    }
 
-    assert expected in rv.data
+    assert expected in json.loads(rv.data)
     assert rv.status_code == 200
 
 
