@@ -36,7 +36,11 @@ $ export FLASK_APP=logserv
 $ flask run
 ```
 
-Server is now running on `localhost:5000` by default.
+Server is now running on `localhost:5000` by default. To reset the DB, or apply a new schema, run:
+
+```bash
+$ flask initdb
+```
 
 How to run with Docker
 ----------------------
