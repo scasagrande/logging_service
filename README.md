@@ -1,6 +1,8 @@
 Logging Server
 ==============
 
+[![Travis-CI build status](https://img.shields.io/travis/scasagrande/logging_service/master.svg?maxAge=2592000)](https://travis-ci.org/scasagrande/logging_service)
+
 `logserv` is a basic Flask-based logging server
 
 How to run
