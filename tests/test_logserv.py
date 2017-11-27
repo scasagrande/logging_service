@@ -66,7 +66,7 @@ def test_store_retrieve(mocker, client, msg):
         "message": msg,
     }
 
-    assert expected in json.loads(rv.data)
+    assert expected in json.loads(rv.data.decode())
     assert rv.status_code == 200
 
 
