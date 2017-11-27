@@ -14,7 +14,7 @@ Python 3 is also required. This may or may not work on Python 2.7, but was not t
 
 After cloning this repo, navigate your terminal into the root folder of this project
 
-- With Python 3, install the requirements
+- With Python 3 (suggested 3.6+), install the requirements
 
 ```bash
 $ pip install -r requirements.txt
