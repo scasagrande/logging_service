@@ -1,6 +1,8 @@
 Logging Server
 ==============
 
+[![Travis-CI build status](https://img.shields.io/travis/scasagrande/logging_service/master.svg?maxAge=2592000)](https://travis-ci.org/scasagrande/logging_service)
+
 `logserv` is a basic Flask-based logging server
 
 How to run
@@ -36,7 +38,11 @@ $ export FLASK_APP=logserv
 $ flask run
 ```
 
-Server is now running on `localhost:5000` by default.
+Server is now running on `localhost:5000` by default. To reset the DB, or apply a new schema, run:
+
+```bash
+$ flask initdb
+```
 
 How to run with Docker
 ----------------------
