@@ -10,6 +10,7 @@ https://github.com/pallets/flask/tree/0.12-maintenance/examples/flaskr
 import os
 import json
 from datetime import datetime
+from collections import OrderedDict
 
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, g, request
@@ -85,10 +86,10 @@ def messages():
         )
         entries = cur.fetchall()
         entries = [
-            {'clientid': entry[0], 'loglevel': entry[1], 'message': entry[2], 'creation_datetime': entry[3]}
+            OrderedDict([('clientid', entry[0]), ('creation_datetime', entry[3]), ('loglevel', entry[1]), ('message', entry[2])])
             for entry in entries
         ]
-        return json.dumps(entries, sort_keys=True)
+        return json.dumps(entries)
 
     elif request.method == 'POST':
         # handle adding new data to the database
